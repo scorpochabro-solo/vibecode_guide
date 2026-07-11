@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://scorpochabro-solo.github.io/vibecode_guide/sitemap.xml
