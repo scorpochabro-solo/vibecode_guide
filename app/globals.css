@@ -1,0 +1,280 @@
+@import 'tailwindcss';
+
+/* ============ Design tokens (источник истины — PLAN.md §3) ============ */
+@theme {
+  --color-bg: #0b0c0e;
+  --color-surface-1: #121316;
+  --color-surface-2: #1a1c20;
+  --color-line: rgba(255, 255, 255, 0.08);
+
+  --color-text: #f4f4f2;
+  --color-muted: #9ba0a8;
+
+  --color-claude: #e8794a;
+  --color-claude-dim: #b95f3d;
+  --color-codex: #4ae8b0;
+  --color-codex-dim: #3db98f;
+  --color-neutral-accent: #7c8cf8;
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --text-hero: clamp(2.4rem, 1rem + 5.4vw, 5.6rem);
+  --text-h2: clamp(1.7rem, 1.1rem + 2.2vw, 3rem);
+  --text-h3: clamp(1.15rem, 1rem + 0.8vw, 1.5rem);
+
+  --space-section: clamp(4.5rem, 3rem + 6vw, 9rem);
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@theme inline {
+  --font-display: var(--font-unbounded), system-ui, sans-serif;
+  --font-sans: var(--font-onest), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+/* ============ База ============ */
+:root {
+  /* акцент активной части — обновляется при скролле (см. useActiveSection) */
+  --active-accent: var(--color-neutral-accent);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Lenis (рекомендованный сниппет) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--active-accent) 35%, transparent);
+  color: var(--color-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--active-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Noise-оверлей на всю страницу */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ============ Акценты частей ============ */
+[data-accent='neutral'] {
+  --accent: var(--color-neutral-accent);
+  --accent-dim: color-mix(in oklab, var(--color-neutral-accent) 70%, black);
+}
+[data-accent='claude'] {
+  --accent: var(--color-claude);
+  --accent-dim: var(--color-claude-dim);
+}
+[data-accent='codex'] {
+  --accent: var(--color-codex);
+  --accent-dim: var(--color-codex-dim);
+}
+
+/* ============ Типографика ============ */
+.h-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.h-section {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-h2);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* Подзаголовки уровня карточек/шагов — Onest: display-шрифт оставляем крупным заголовкам */
+.h-sub {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-h3);
+  line-height: 1.3;
+}
+
+.prose-measure {
+  max-width: 68ch;
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Инлайн-код в текстах */
+.inline-code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  padding: 0.1em 0.4em;
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .inline-code {
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+/* Ссылки в контенте */
+.content-link {
+  color: var(--accent, var(--color-neutral-accent));
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--accent, var(--color-neutral-accent)) 45%, transparent);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.25s var(--ease-out-expo);
+}
+.content-link:hover {
+  text-decoration-color: var(--accent, var(--color-neutral-accent));
+}
+
+/* ============ Поверхности и карточки ============ */
+.card {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  transition:
+    transform 0.25s var(--ease-out-expo),
+    border-color 0.25s var(--ease-out-expo),
+    background-color 0.25s var(--ease-out-expo);
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in oklab, var(--accent, var(--color-neutral-accent)) 55%, transparent);
+}
+
+/* Мягкий glow в цвет части. Осознанно radial-gradient, а не filter: blur() —
+   большие blur-слои клинят компоситор при длинном плавном скролле. */
+.glow {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0.2;
+  pointer-events: none;
+  background: radial-gradient(closest-side, var(--glow-c, var(--accent, var(--color-neutral-accent))) 0%, transparent 72%);
+}
+
+/* ============ Терминальные блоки ============ */
+.terminal {
+  background: #0d0e11;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.terminal-code {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  padding: 0.9rem 1.1rem;
+  overflow-x: auto;
+  white-space: pre;
+  color: #e7e9ec;
+}
+.terminal-code .cmd-prompt {
+  color: var(--accent, var(--color-neutral-accent));
+  user-select: none;
+}
+
+/* Горизонтальный скролл таблиц на мобильных */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============ Появления без JS-фреймворка ============ */
+/* Базовое состояние прячем ТОЛЬКО при работающем JS (html.js ставит инлайн-скрипт
+   в layout) — без JS контент виден сразу. */
+html.js .reveal {
+  opacity: 0;
+  translate: 0 24px;
+  transition:
+    opacity 0.6s var(--ease-out-expo),
+    translate 0.6s var(--ease-out-expo);
+}
+html.js .reveal.is-in {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Hero: построчное появление на чистом CSS — не ждёт гидрации (LCP) */
+html.js .rise {
+  opacity: 0;
+  translate: 0 24px;
+  animation: rise 0.6s var(--ease-out-expo) forwards;
+  animation-delay: var(--rise-delay, 0s);
+}
+@keyframes rise {
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal,
+  html.js .rise {
+    opacity: 1;
+    translate: none;
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ============ Reduced motion: всё выключить ============ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
