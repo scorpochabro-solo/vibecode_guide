@@ -50,7 +50,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" data-accent="neutral" className={`${unbounded.variable} ${onest.variable} ${jetbrains.variable}`}>
+    // suppressHydrationWarning: инлайн-скрипт в body добавляет класс `js` до гидрации — это ожидаемо
+    <html
+      lang="ru"
+      data-accent="neutral"
+      suppressHydrationWarning
+      className={`${unbounded.variable} ${onest.variable} ${jetbrains.variable}`}
+    >
       <body>
         {/* html.js включает скрытие-до-появления (.reveal/.rise); без JS контент виден сразу */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
